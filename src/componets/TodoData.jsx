@@ -37,13 +37,14 @@ const TodoData = () => {
         // console.log(todos)
     }
 
+
     const handleDelete = (idx) => {
         const newTodos = [...todos];
         newTodos.splice(idx, 1);
         // newTodos.filter((idx) => {
         //     newTodos.id = idx;
         // })
-        // console.log(newTodos);
+        console.log(newTodos);
         setTodos(newTodos);
     };
 
