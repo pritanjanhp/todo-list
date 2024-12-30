@@ -4,7 +4,7 @@ const TodoData = () => {
     const [todos, setTodos] = useState([])
     let [data, setData] = useState('')
 
-    // const db = [
+    // const todos = [
     //     {
     //         id: 1,
     //         name: "asd",
@@ -19,24 +19,37 @@ const TodoData = () => {
     // ]
 
     function handleChange(e) {
+        // console.log(e.target.value)
         setData(e.target.value);
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();             // to prevent from reloading and other default featrues
-        setTodos([...todos, data]);     // destructring is done so that when the next daat will be entered so that it won't merge with the previous one else it might get merge with it.
-        setData('')                     // make the input filed empty after every time entering the data.
+    const handleSubmit = (e) => {
+        // console.log(data)
+        e.preventDefault();
+        const newData = {
+            id: new Date().getTime(),
+            text: data,
+            completed: false
+        }
+        console.log(newData)
+        setTodos([...todos, newData]);
+        setData('')
+        // console.log(todos)
     }
 
     const handleDelete = (idx) => {
         const newTodos = [...todos];
         newTodos.splice(idx, 1);
+        // newTodos.filter((idx) => {
+        //     newTodos.id = idx;
+        // })
+        // console.log(newTodos);
         setTodos(newTodos);
     };
 
     return (
         <>
-            <h3 className='todo-text'>todo data</h3>
+            <h3 className='todo-text'>Todo APP</h3>
             <div className='todo-item todo-card' >
                 <form onSubmit={handleSubmit}>
                     <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
@@ -44,29 +57,27 @@ const TodoData = () => {
                 </form>
 
                 {
-                    todos.map((item) => (
-                        <div className='todo-card'>
+                    todos.length !== 0 ? todos.map((item) => (
+                        <div className='todo-card todo-item' key={item.id}>
                             <span>
-                                {item}
+                                {item.text}
                                 <button className='todo-button' onClick={handleDelete}>Delete</button>
                                 <button className='todo-button'>Edit</button>
-                                <button className='todo-button'>Update</button>
                             </span>
-
 
                             {/* <span>{item.id}</span>
                             <span>{item.name}</span>
-                            <span>{item.add}</span> */}
-                            {/* <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
+                            <span>{item.add}</span>
+                            <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
                             <button className='todo-button' onClick={handleSubmit}>Add</button>
                             <button className='todo-button'>Delete</button>
                             <button className='todo-button'>Edit</button> */}
                         </div>
-                    ))
+                    )) : <h1> No data is entered</h1>
                 }
             </div>
         </>
     )
 }
 
-export default TodoData
+export default TodoData;
