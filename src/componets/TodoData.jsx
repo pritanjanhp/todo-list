@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
+import { MdAutoDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
+import SearchTodo from './SearchTodo';
+import TodoList from './TodoList';
+import ClearTodo from './ClearTodo';
 
 const TodoData = () => {
-    const [todos, setTodos] = useState([])
+    let [todos, setTodos] = useState([])
     let [data, setData] = useState('')
+    let [editIdx, setEditIdx] = useState(null);
+    let [search, setSearch] = useState('');
+    const [updateData, setUpdateData] = useState({ id: null, text: '', finish: false });
 
     // const todos = [
     //     {
@@ -26,17 +34,32 @@ const TodoData = () => {
     const handleSubmit = (e) => {
         // console.log(data)
         e.preventDefault();
-        const newData = {
-            id: new Date().getTime(),
-            text: data,
-            completed: false
+        if (editIdx === null) {
+            const newData = {
+                id: new Date().getTime(),
+                text: data,
+                finish: false
+            }
+            // console.log(newData)
+            setTodos([newData, ...todos]);
+        } else {
+            let updateTodo = todos.map((todo, idx) => idx === editIdx ? { ...todo, text: data } : todo)
+            // console.log(updateTodo)
+            setTodos(updateTodo)
+            setEditIdx(null);
         }
-        console.log(newData)
-        setTodos([...todos, newData]);
         setData('')
         // console.log(todos)
     }
 
+    let handleUpdate = (id) => {
+        console.log(id);
+        let updateTodo = todos.map((todo) => todo.id == id ? { ...todo, text: updateData.text } : todo)
+        // console.log(updateTodo)
+        setTodos(updateTodo)
+        setEditIdx(null);
+        setUpdateData({ id: null, text: null, finish: false })
+    }
 
     const handleDelete = (idx) => {
         const newTodos = [...todos];
@@ -48,36 +71,65 @@ const TodoData = () => {
         setTodos(newTodos);
     };
 
+    const handleEdit = (idx) => {
+        setEditIdx(idx);
+        setData(todos[idx].text);
+    };
+
+    const clearFinish = () => {
+        const activeTodos = todos.filter((todo) => !todo.finish);
+        setTodos(activeTodos);
+    };
+
+    let toggleFinish = (idx) => {
+        let updateTodo = todos.map((todo, i) => i === idx ? { ...todo, finish: !todo.finish } : todo);
+        setTodos(updateTodo)
+    };
+
+    function handleSearchClick() {
+        console.log('Searching for:', search);
+    }
+
+    const filteredTodos = todos.filter(todo =>
+        todo.text.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const handleInputChange = (e) => {
+        setSearch(e.target.value);
+    };
+
     return (
-        <>
-            <h3 className='todo-text'>Todo APP</h3>
-            <div className='todo-item todo-card' >
-                <form onSubmit={handleSubmit}>
-                    <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
-                    <button className='todo-button'> Add</button>
-                </form>
+        // <div className='max-w-full text-center m-auto font-sans' >
+        <div className='todo-container'>
+            <h3 className='todo-header'>Todo APP</h3>
 
-                {
-                    todos.length !== 0 ? todos.map((item) => (
-                        <div className='todo-card todo-item' key={item.id}>
-                            <span>
-                                {item.text}
-                                <button className='todo-button' onClick={handleDelete}>Delete</button>
-                                <button className='todo-button'>Edit</button>
-                            </span>
+            <form onSubmit={handleSubmit} className='todo-submit'>
+                <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
+                <button type="submit" className='todo-button-add'> add</button>
+            </form>
 
-                            {/* <span>{item.id}</span>
-                            <span>{item.name}</span>
-                            <span>{item.add}</span>
-                            <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
-                            <button className='todo-button' onClick={handleSubmit}>Add</button>
-                            <button className='todo-button'>Delete</button>
-                            <button className='todo-button'>Edit</button> */}
-                        </div>
-                    )) : <h1> No data is entered</h1>
-                }
-            </div>
-        </>
+            <SearchTodo
+                data={search}
+                handleInputChange={handleInputChange}
+                handleSearchClick={handleSearchClick}
+            />
+
+            {search ? (filteredTodos.map(todo => (
+                <li key={todo.id}>{todo.text}</li>
+            ))) : ('')
+            }
+
+            <TodoList
+                todos={todos}
+                updateData={updateData}
+                setUpdateData={setUpdateData}
+                toggleFinish={toggleFinish}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                handleUpdate={handleUpdate}
+            />
+            <ClearTodo todos={todos} clearFinish={clearFinish} />
+        </div>
     )
 }
 
