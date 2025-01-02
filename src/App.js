@@ -4,7 +4,8 @@ import TodoData from "./componets/TodoData";
 const App = () => {
   return (
     <>
-      <h2>App</h2>
+      {/* <h2>App</h2>
+       */}
       <TodoData />
     </>
   );
