@@ -81,28 +81,44 @@ const TodoData = () => {
         setTodos(activeTodos);
     };
 
-    let toggleFinish = (idx) => {
-        let updateTodo = todos.map((todo, i) => i === idx ? { ...todo, finish: !todo.finish } : todo);
-        setTodos(updateTodo)
+    // let toggleFinish = (idx) => {
+    //     let updateTodo = todos.map((todo, i) => i === idx ? { ...todo, finish: !todo.finish } : todo);
+    //     setTodos(updateTodo)
+    // };
+
+    const toggleFinish = (id) => {
+        setTodos(prevTodos =>
+            prevTodos.map(todo =>
+                todo.id === id ? { ...todo, finish: !todo.finish } : todo
+            )
+        );
     };
 
-    function handleSearchClick() {
-        console.log('Searching for:', search);
-    }
-
-    const filteredTodos = todos.filter(todo =>
-        todo.text.toLowerCase().includes(search.toLowerCase())
-    );
 
     const handleInputChange = (e) => {
         setSearch(e.target.value);
+        let filteredTodos = todos
+        if (e.target.value.trim().length > 0) {
+            const filteredDatas = todos.filter(todo =>
+                todo.text.toLowerCase().includes(e.target.value.toLowerCase())
+            );
+        } else {
+            filteredTodos = todos;
+        }
+        // console.log(e.target.value);
+        setTodos(filteredTodos)
     };
 
+    let filteredDatas = todos;
+    if (search.trim().length > 0) {
+        filteredDatas = todos.filter(todo =>
+            todo.text.toLowerCase().includes(search.toLowerCase())
+        );
+    }
+
     return (
-        // <div className='max-w-full text-center m-auto font-sans' >
         <div className='todo-container'>
             <h3 className='todo-header'>Todo APP</h3>
-
             <form onSubmit={handleSubmit} className='todo-submit'>
                 <input type='text' className='todo-input' placeholder='write your data here' value={data} onChange={handleChange} />
                 <button type="submit" className='todo-button-add'> add</button>
@@ -110,17 +126,17 @@ const TodoData = () => {
 
             <SearchTodo
                 data={search}
-                handleInputChange={handleInputChange}
-                handleSearchClick={handleSearchClick}
+                setSearch={setSearch}
+            // handleSearchClick={handleSearchClick}
             />
 
-            {search ? (filteredTodos.map(todo => (
+            {/* {search ? (filteredTodos.map(todo => (
                 <li key={todo.id}>{todo.text}</li>
             ))) : ('')
-            }
+            } */}
 
             <TodoList
-                todos={todos}
+                todos={filteredDatas}
                 updateData={updateData}
                 setUpdateData={setUpdateData}
                 toggleFinish={toggleFinish}
